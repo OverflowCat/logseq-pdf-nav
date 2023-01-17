@@ -14,8 +14,13 @@
   "license": "MIT",
   "logseq": {
     "id": "logseq-pdf-nav",
+    "main": "./index.html",
     "title": "Logseq PDF Navigation",
-    "icon": "./logo.svg",
-    "description": "Jump back after you click internal links of PDF in Logseq."
+    "icon": "./icon.svg",
+    "description": "Jump back after you click internal links of PDF in Logseq.",
+    "effect": true
+  },
+  "devDependencies": {
+    "@logseq/libs": "^0.0.14"
   }
 }
