@@ -1,6 +1,6 @@
 {
   "name": "logseq-pdf-nav",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Jump back after you click internal links of PDF in Logseq.",
   "main": "index.js",
   "scripts": {

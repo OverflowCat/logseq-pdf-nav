@@ -22,13 +22,13 @@ class PdfHistory {
     back() {
         console.log("Back");
         if (this.canGoBack()) this.locations[--this.current_idx].scrollIntoView();
-        console.log(this.locations, this.current_idx);
+        // console.log(this.locations, this.current_idx);
     }
 
     forward() {
         console.log("Forward", this.locations);
         if (this.canGoForward()) this.locations[++this.current_idx].scrollIntoView();
-        console.log(this.locations, this.current_idx);
+        // console.log(this.locations, this.current_idx);
     }
 
     canGoBack() {
@@ -48,13 +48,11 @@ class pdfLocation {
     }
 
     scrollIntoView() {
-        console.log("scrollIntoView");
         top?.window.lsPdfViewer.scrollPageIntoView({
             pageNumber: this.page,
             destArray: [null, { name: "XYZ" },
                 this.left, this.top]
         });
-        console.log("scrolledIntoView");
     }
 }
 
@@ -82,12 +80,10 @@ function initialize(ele) {
     let pdfHistory = new PdfHistory();
 
     function callback(e) {
-        isDebug && console.log({ top });
         const ele = e.srcElement;
         if (ele.tagName !== 'A' || ele.className !== "internalLink")
             return;
         const viewer = top?.lsPdfViewer;
-        console.log(viewer.scroll);
 
         /* An example of viewer._location
         {
@@ -100,11 +96,11 @@ function initialize(ele) {
         } */
         const pre = new pdfLocation(viewer._location.pageNumber, viewer._location.left, viewer._location.top);
         setTimeout(() => {
-            console.log(viewer.scroll)
+            // console.log(viewer.scroll)
             const post = new pdfLocation(viewer._location.pageNumber, viewer._location.left, viewer._location.top);
             pdfHistory.add(pre, post);
         }, 100);
-        console.log({ pdfHistory });
+        // console.log({ pdfHistory });
     }
 
     setTimeout(() => {
@@ -156,7 +152,7 @@ const right_arr = `
     <line y1="8"  x1="15" y2="12" x2="19"></line>
     </svg>`;
 
-const isDebug = true;
+const isDebug = false;
 
 logseq.ready(() => {
     isDebug && logseq.App.showMsg("❤️ logseq-pdf-nav has bean loaded!");
