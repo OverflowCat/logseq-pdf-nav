@@ -5,29 +5,29 @@ class PdfHistory {
     }
 
     add(pre, post) {
-        if (this.locations === []) {
+        if (this.locations.length == 0) {
             this.locations = [pre, post];
             this.current_idx = 1;
+            return;
+        }
+        this.locations[this.current_idx] = pre;
+        if (this.locations.length === ++this.current_idx) { // there are no forwards
+            this.locations.push(post);
         } else {
-            this.locations[this.current_idx] = pre;
-            if (this.locations.length === ++this.current_idx) { // there are no forwards
-                this.locations.push(post);
-            } else {
-                this.locations[this.current_idx] = post;
-                this.locations.splice(this.current_idx + 1)
-            }
+            this.locations[this.current_idx] = post;
+            this.locations.splice(this.current_idx + 1)
         }
     }
 
     back() {
         console.log("Back");
-        if (this.canGoBack) this.locations[--this.current_idx].scrollIntoView();
+        if (this.canGoBack()) this.locations[--this.current_idx].scrollIntoView();
         console.log(this.locations, this.current_idx);
     }
 
     forward() {
         console.log("Forward", this.locations);
-        if (this.canGoForward) this.locations[++this.current_idx].scrollIntoView();
+        if (this.canGoForward()) this.locations[++this.current_idx].scrollIntoView();
         console.log(this.locations, this.current_idx);
     }
 
@@ -58,53 +58,6 @@ class pdfLocation {
     }
 }
 
-let pdfHistory = new PdfHistory();
-
-function callback(e) {
-    const ele = (window.e || e)?.srcElement;
-    if (ele.tagName !== 'A' || ele.className !== "internalLink")
-        return;
-    console.log(window.lsPdfViewer.scroll);
-
-    /* An example of viewer._location
-    {
-        "pageNumber": 235,
-        "scale": "auto",
-        "top": 784,
-        "left": 0,
-        "rotation": 0,
-        "pdfOpenParams": "#page=235&zoom=auto,0,784"
-    } */
-    const { pageNumber, left, top } = window.lsPdfViewer._location;
-    const pre = new pdfLocation(pageNumber, left, top);
-    setTimeout(() => {
-        console.log(window.lsPdfViewer.scroll)
-        const { pageNumber, left, top } = window.lsPdfViewer._location;
-        const post = new pdfLocation(pageNumber, left, top);
-        pdfHistory.add(pre, post);
-    }, 100);
-    console.log({ pdfHistory });
-}
-
-document.addEventListener('click', callback, false);
-
-document.addEventListener('keypress', shortcut);
-
-function shortcut(event) {
-    if (event.altKey) {
-        console.log(event.key);
-        switch (event.key) {
-            case "z":
-                back();
-                event.preventDefault();
-                break;
-            case "q":
-                forward(); event.preventDefault();
-                break;
-        }
-    }
-}
-
 const left_arr = `
 <svg stroke="currentColor" fill="none" width="16" class="icon" stroke-width="2" stroke-linejoin="round" viewBox="0 0 24 24" stroke-linecap="round" height="16">
     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -121,12 +74,82 @@ const right_arr = `
     <line y1="8"  x1="15" y2="12" x2="19"></line>
 </svg>`;
 
-const toolbar = document.querySelector(".extensions__pdf-toolbar > div > div.buttons");
-let bck_btn = document.createElement("a");
-bck_btn.innerHTML = left_arr;
-let fwd_btn = document.createElement("a");
-fwd_btn.innerHTML = right_arr;
-bck_btn.onclick = pdfHistory.back.bind(pdfHistory); // fix `this` issue
-fwd_btn.onclick = pdfHistory.forward.bind(pdfHistory);
-toolbar.insertBefore(fwd_btn, toolbar.children[0]);
-toolbar.insertBefore(bck_btn, toolbar.children[0]);
+function waitForElement(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                resolve(document.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(document.querySelector("div#app-single-container"), {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+function initialize(ele) {
+    let pdfHistory = new PdfHistory();
+
+    function callback(e) {
+        const ele = (window.e || e)?.srcElement;
+        if (ele.tagName !== 'A' || ele.className !== "internalLink")
+            return;
+        console.log(window.lsPdfViewer.scroll);
+
+        /* An example of viewer._location
+        {
+            "pageNumber": 235,
+            "scale": "auto",
+            "top": 784,
+            "left": 0,
+            "rotation": 0,
+            "pdfOpenParams": "#page=235&zoom=auto,0,784"
+        } */
+        const { pageNumber, left, top } = window.lsPdfViewer._location;
+        const pre = new pdfLocation(pageNumber, left, top);
+        setTimeout(() => {
+            console.log(window.lsPdfViewer.scroll)
+            const { pageNumber, left, top } = window.lsPdfViewer._location;
+            const post = new pdfLocation(pageNumber, left, top);
+            pdfHistory.add(pre, post);
+        }, 100);
+        console.log({ pdfHistory });
+    }
+
+    setTimeout(() => {
+        const toolbar = document.querySelector(".extensions__pdf-toolbar > div > div.buttons");
+        let bck_btn = document.createElement("a");
+        bck_btn.innerHTML = left_arr;
+        let fwd_btn = document.createElement("a");
+        fwd_btn.innerHTML = right_arr;
+        bck_btn.onclick = pdfHistory.back.bind(pdfHistory); // fix `this` issue
+        fwd_btn.onclick = pdfHistory.forward.bind(pdfHistory);
+        fwd_btn.style.margin = "auto"; // center the svg vertically
+        bck_btn.style.margin = "auto";
+        bck_btn.style.marginLeft = "4px";
+        fwd_btn.style.padding = "4px";
+        bck_btn.style.padding = "4px";
+        toolbar.insertBefore(fwd_btn, toolbar.children[0]);
+        toolbar.insertBefore(bck_btn, toolbar.children[0]);
+        document.addEventListener('click', callback, false);
+        toolbar.lastElementChild?.addEventListener('click', () => {
+            pdfHistory = null;
+            document.removeEventListener('click', callback);
+        });
+    }, 1500);
+}
+
+while (true) {
+    if (document.querySelector("div.extensions__pdf-viewer") == null) {
+        const ele = await waitForElement("div.extensions__pdf-viewer");
+        initialize(ele);
+    }
+    await new Promise(r => setTimeout(r, 1000));
+}
