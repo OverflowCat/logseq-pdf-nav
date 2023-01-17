@@ -1,25 +1,25 @@
 {
   "name": "logseq-pdf-nav",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Jump back after you click internal links of PDF in Logseq.",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "logseq",
-    "pdf"
+    "pdf",
+    "logseq-plugin"
   ],
   "author": "OverflowCat",
   "license": "MIT",
   "logseq": {
     "id": "logseq-pdf-nav",
-    "main": "./index.html",
-    "title": "Logseq PDF Navigation",
+    "title": "PDF Navigation",
     "icon": "./icon.svg",
-    "description": "Jump back after you click internal links of PDF in Logseq.",
     "effect": true
   },
+  "repository": "https://github.com/OverflowCat/logseq-pdf-nav",
   "devDependencies": {
     "@logseq/libs": "^0.0.14"
   }

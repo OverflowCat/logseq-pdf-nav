@@ -10,6 +10,6 @@ https://user-images.githubusercontent.com/20166026/213019065-f07945c4-3702-48f9-
 
 ## Known Issues
 
-* Please first close the previous document if you want to open another one. (will fix later)
+* Please close the previous document before opening another one to clear the history. (will resolve this issue later)
 
 * If the buttons do not appear, please close and re-open it, for the first time of loading a PDF may be slow.
