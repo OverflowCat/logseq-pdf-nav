@@ -10,12 +10,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Bundle @logseq/libs dependency
         run: |
-          cd logseq-simpread
+          ls
+          cd logseq-pdf-nav
           echo "<script>" > lsplugin.user.min.js
           curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" >> lsplugin.user.min.js
           echo "</script>" >> lsplugin.user.min.js
-          sed '8d' -i 'src/index.html'
-          sed -e "7r lsplugin.user.min.js" -i 'src/index.html'
+          sed '8d' -i 'index.html'
+          sed -e "7r lsplugin.user.min.js" -i 'index.html'
       - name: Create and upload archive
         run: |
           cd logseq-pdf-nav
@@ -25,4 +26,4 @@ jobs:
           zip ${name}-v${version}.zip ./*.*
           gh release create v${version} ${name}-v${version}.zip package.json
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

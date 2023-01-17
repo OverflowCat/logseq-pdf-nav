@@ -4,7 +4,6 @@ This is a plugin that helps you navigate through a PDF document in Logseq when t
 
 ## Known Issues
 
-* Please first close the previous document if you want to open another one. (Will fix later)
+* Please first close the previous document if you want to open another one. (will fix later)
 
-* If the buttons do not appear, please close and re-open it, for the first time of loading may be slow.
-
+* If the buttons do not appear, please close and re-open it, for the first time of loading a PDF may be slow.
