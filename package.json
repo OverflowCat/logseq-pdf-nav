@@ -1,7 +1,7 @@
 {
-  "name": "logseq-pdf-navigation",
+  "name": "logseq-pdf-nav",
   "version": "0.1.0",
-  "description": "",
+  "description": "Jump back after you click internal links of PDF in Logseq.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,5 +11,11 @@
     "pdf"
   ],
   "author": "OverflowCat",
-  "license": "MIT"
+  "license": "MIT",
+  "logseq": {
+    "id": "logseq-pdf-nav",
+    "title": "Logseq PDF Navigation",
+    "icon": "./logo.svg",
+    "description": "Jump back after you click internal links of PDF in Logseq."
+  }
 }
