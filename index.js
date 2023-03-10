@@ -48,7 +48,8 @@ class pdfLocation {
     }
 
     scrollIntoView() {
-        top?.window.lsPdfViewer.scrollPageIntoView({
+        const viewer = top?.window.lsActivePdfViewer || top?.window.lsPdfViewer;
+        viewer.scrollPageIntoView({
             pageNumber: this.page,
             destArray: [null, { name: "XYZ" },
                 this.left, this.top]
@@ -83,7 +84,7 @@ function initialize(ele) {
         const ele = e.srcElement;
         if (ele.tagName !== 'A' || ele.className !== "internalLink")
             return;
-        const viewer = top?.lsPdfViewer;
+        const viewer = top?.lsActivePdfViewer || top?.lsPdfViewer;
 
         /* An example of viewer._location
         {
