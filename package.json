@@ -2,7 +2,7 @@
   "name": "logseq-pdf-nav",
   "version": "0.1.3",
   "description": "Jump back after you click internal links of PDF in Logseq.",
-  "main": "index.html",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

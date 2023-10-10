@@ -77,14 +77,16 @@ function waitForElement(selector) {
     });
 }
 
-function initialize(ele) {
-    let pdfHistory = new PdfHistory();
+function initialize(viewer) {
+    if (viewer?._pluginPdfHistroy) return
+
+    const ele = viewer.container
+    const pdfHistory = viewer._pluginPdfHistroy = new PdfHistory();
 
     function callback(e) {
         const ele = e.srcElement;
-        if (ele.tagName !== 'A' || ele.className !== "internalLink")
+        if (ele.tagName !== 'A' || (ele.className !== "internalLink" && !ele.closest('[data-internal-link]')))
             return;
-        const viewer = top?.lsActivePdfViewer || top?.lsPdfViewer;
 
         /* An example of viewer._location
         {
@@ -119,22 +121,40 @@ function initialize(ele) {
         bck_btn.style.padding = "4px";
         toolbar.insertBefore(fwd_btn, toolbar.children[0]);
         toolbar.insertBefore(bck_btn, toolbar.children[0]);
-        top?.document.addEventListener('click', callback, false);
-        toolbar.lastElementChild?.addEventListener('click', () => {
-            pdfHistory = null;
-            top?.document.removeEventListener('click', callback);
-        });
-    }, 1500);
+        ele.addEventListener('click', callback, false);
+    }, 64);
 }
 
 async function main() {
-    while (true) {
-        if (top?.document.querySelector("div.extensions__pdf-viewer") == null) {
-            const ele = await waitForElement("div.extensions__pdf-viewer");
-            initialize(ele);
+    const pdfOwner = top?.document.body
+    const getActivePdfViewer = () => top?.lsActivePdfViewer || top?.lsPdfViewer;
+    const pdfOwnerObserver = new MutationObserver(async () => {
+        if (pdfOwner.classList.contains('is-pdf-active')) {
+            await waitForElement('.extensions__pdf-toolbar')
+            const viewer = getActivePdfViewer();
+            if (!viewer) return
+            initialize(viewer);
         }
-        await new Promise(r => setTimeout(r, 800));
-    }
+    })
+
+    pdfOwnerObserver.observe(pdfOwner, {attributes: true})
+
+    // shortcuts
+    logseq.App.registerCommandPalette({
+        key: 'pdf-nav-backward',
+        label: 'Navigate PDF viewer: backward',
+        keybinding: { binding: 'alt+z'}
+    }, () => getActivePdfViewer()?._pluginPdfHistroy.back())
+
+    logseq.App.registerCommandPalette({
+        key: 'pdf-nav-forward',
+        label: 'Navigate PDF viewer: forward',
+        keybinding: { binding: 'shift+alt+z'}
+    }, () => getActivePdfViewer()?._pluginPdfHistroy.forward())
+
+    logseq.beforeunload(() => {
+        pdfOwnerObserver.disconnect()
+    })
 }
 
 const left_arr = `
@@ -156,6 +176,6 @@ const right_arr = `
 const isDebug = false;
 
 logseq.ready(() => {
-    isDebug && logseq.App.showMsg("❤️ logseq-pdf-nav has bean loaded!");
+    isDebug && logseq.App.showMsg("❤️ logseq-pdf-nav has been loaded!");
     main();
 }).catch(console.error);
