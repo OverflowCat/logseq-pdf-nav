@@ -1,6 +1,6 @@
 {
   "name": "logseq-pdf-nav",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Jump back after you click internal links of PDF in Logseq.",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,6 @@
   },
   "repository": "https://github.com/OverflowCat/logseq-pdf-nav",
   "devDependencies": {
-    "@logseq/libs": "^0.0.14"
+    "@logseq/libs": "^0.0.15"
   }
 }
