@@ -1,5 +1,8 @@
 name: create-release
-on: [push]
+on:
+  push:
+    branches:
+      - master # Creating a tag dispatches a push event, so we have to filter for master
 jobs:
   publish:
     runs-on: ubuntu-latest
